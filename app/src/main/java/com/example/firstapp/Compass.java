@@ -1,5 +1,6 @@
 package com.example.firstapp;
 
+import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +11,9 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.os.Vibrator;
+
 
 import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 import static android.hardware.Sensor.TYPE_MAGNETIC_FIELD;
@@ -22,6 +26,8 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
     private float azimuth= 0f;
     private float currentazimuth= 0f;
     private SensorManager sensorManager;
+    private TextView textView;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,9 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
 
         imageView = (ImageView) findViewById(R.id.compass_id);
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        textView = (TextView) findViewById(R.id.textView);
+        vibrator=  (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
     }
 
@@ -76,8 +85,14 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
                 animation.setDuration(500);
                 animation.setRepeatCount(0);
                 animation.setFillAfter(true);
+                int tempAzimuth = (int) azimuth;
+                textView.setText(""+ tempAzimuth+"°" );
                 imageView.startAnimation(animation);
+                final long[] pattern= {200,400}; //sleep for 2000ms and vibrate for 1000ms
 
+                if(tempAzimuth>=345 || tempAzimuth<=15){
+                    vibrator.vibrate(pattern,1);
+                }
             }
         }
     }
@@ -86,4 +101,5 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
 }

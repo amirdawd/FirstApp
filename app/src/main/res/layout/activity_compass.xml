@@ -24,4 +24,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="166dp"
+        android:layout_marginTop="110dp"
+        android:text="Hello there!"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="30dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="166dp"
+        android:layout_marginTop="140dp"
+        android:layout_marginBottom="166dp"
+        app:srcCompat="@drawable/pointer" />
+
+
 </RelativeLayout>
