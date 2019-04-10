@@ -1,16 +1,23 @@
 package com.example.firstapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.os.Vibrator;
 
@@ -25,20 +32,21 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
     private float[] mGeomagnetic = new float[3];
     private float azimuth= 0f;
     private float currentazimuth= 0f;
+    private Vibrator vibrator;
     private SensorManager sensorManager;
     private TextView textView;
-    private Vibrator vibrator;
+    private MediaPlayer player;
+    private RelativeLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compass);
-
         imageView = (ImageView) findViewById(R.id.compass_id);
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         textView = (TextView) findViewById(R.id.textView);
-        vibrator=  (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        layout = (RelativeLayout) findViewById(R.id.parent);
 
     }
 
@@ -54,6 +62,7 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onSensorChanged(SensorEvent event) {
         final float alpha = 0.97f;
@@ -88,11 +97,20 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
                 int tempAzimuth = (int) azimuth;
                 textView.setText(""+ tempAzimuth+"°" );
                 imageView.startAnimation(animation);
-                final long[] pattern= {200,400}; //sleep for 2000ms and vibrate for 1000ms
+
 
                 if(tempAzimuth>=345 || tempAzimuth<=15){
-                    vibrator.vibrate(pattern,1);
+                    play();
+                    layout.setBackgroundColor(Color.LTGRAY);
+                    vibrate(500,50);
                 }
+
+                else{
+                    layout.setBackgroundColor(Color.WHITE);
+                    stopVibrate();
+
+                }
+                stopVibrate();
             }
         }
     }
@@ -102,4 +120,27 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
 
     }
 
+    public void play(){
+        if(player==null){
+            player= MediaPlayer.create(this,R.raw.beep);
+        }
+        player.start();
+    }
+
+    public void pause(){
+        if(player!= null){
+            player.stop();
+        }
+    }
+    public void stop(View v){
+
+    }
+    public void vibrate(int sleep, int vibrate) {
+
+        final long[] pattern = {sleep, vibrate}; //sleep for 200ms and vibrate for 1000ms
+           vibrator.vibrate(pattern, 0);
+    }
+    public void stopVibrate(){
+        vibrator.cancel();
+    }
 }
