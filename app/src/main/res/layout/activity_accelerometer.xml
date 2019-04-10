@@ -51,4 +51,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/yvalue" />
+
+    <TextView
+        android:id="@+id/ori"
+        android:layout_width="wrap_content"
+        android:layout_height="15dp"
+        android:layout_marginStart="200dp"
+        android:layout_marginLeft="200dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="250dp"
+        android:layout_marginRight="200dp"
+        android:layout_marginBottom="283dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.244"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yvalue"
+        app:layout_constraintVertical_bias="0.0" />
+
+
 </android.support.constraint.ConstraintLayout>
