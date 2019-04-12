@@ -91,26 +91,29 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
 
                 Animation animation = new RotateAnimation(-currentazimuth,-azimuth, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                 currentazimuth = azimuth;
-                animation.setDuration(500);
+                animation.setDuration(100);
                 animation.setRepeatCount(0);
                 animation.setFillAfter(true);
-                int tempAzimuth = (int) azimuth;
-                textView.setText(""+ tempAzimuth+"°" );
+                int tempAzimuth = Math.round(azimuth);
                 imageView.startAnimation(animation);
-
-
+                setOrientation(tempAzimuth);
                 if(tempAzimuth>=345 || tempAzimuth<=15){
+
                     play();
                     layout.setBackgroundColor(Color.LTGRAY);
-                    vibrate(500,50);
+                    if(tempAzimuth==345){
+                        vibrator.vibrate(100);
+                    }
+                    if(tempAzimuth==15){
+                        vibrator.vibrate(100);
+                    }
                 }
 
                 else{
                     layout.setBackgroundColor(Color.WHITE);
-                    stopVibrate();
 
                 }
-                stopVibrate();
+
             }
         }
     }
@@ -132,15 +135,34 @@ public class Compass extends AppCompatActivity implements SensorEventListener {
             player.stop();
         }
     }
-    public void stop(View v){
 
+    public void setOrientation(int tempAzimuth){
+        if(tempAzimuth==0 && tempAzimuth==360){
+            textView.setText(""+ tempAzimuth+ "°" + "N");
+        }
+        if(tempAzimuth>0 && tempAzimuth<90){
+            textView.setText(""+ tempAzimuth+ "°" + "NE");
+        }
+        if(tempAzimuth==90){
+            textView.setText(""+ tempAzimuth+ "°" + "E");
+        }
+        if(tempAzimuth>90 && tempAzimuth<180){
+            textView.setText(""+ tempAzimuth+ "°" + "SE");
+        }
+        if(tempAzimuth==180){
+            textView.setText(""+ tempAzimuth+ "°" + "S");
+        }
+        if(tempAzimuth>180 && tempAzimuth<270){
+            textView.setText(""+ tempAzimuth+ "°" + "SW");
+        }
+        if(tempAzimuth==270){
+            textView.setText(""+ tempAzimuth+ "°" + "W");
+        }
+        if(tempAzimuth>270 && tempAzimuth<360){
+            textView.setText(""+ tempAzimuth+ "°" + "NW");
+        }
     }
-    public void vibrate(int sleep, int vibrate) {
 
-        final long[] pattern = {sleep, vibrate}; //sleep for 200ms and vibrate for 1000ms
-           vibrator.vibrate(pattern, 0);
-    }
-    public void stopVibrate(){
-        vibrator.cancel();
-    }
+
+
 }
