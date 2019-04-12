@@ -1,12 +1,18 @@
 package com.example.firstapp;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Accelerometer extends AppCompatActivity implements SensorEventListener {
@@ -14,10 +20,17 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
     private Sensor senAccelerometer;
     private long lastUpdate = 0;
     private float last_x, last_y, last_z;
-    private float preValue[];
+    private float x, y,z;
     private static final int SHAKE_THRESHOLD = 600;
-    private TextView textX, textY, textZ;
-    private TextView orientation;
+    private TextView textX, textY, textZ, orientation;
+    private float mAccel; // acceleration apart from gravity
+    private float mAccelCurrent; // current acceleration including gravity
+    private float mAccelLast; // last acceleration including gravity
+    private Vibrator vibrator;
+    private android.support.constraint.ConstraintLayout layout;
+    private MediaPlayer player;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +42,9 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
         textX = (TextView)findViewById(R.id.xvalue);
         textY = (TextView)findViewById(R.id.yvalue);
         textZ= (TextView)findViewById(R.id.zvalue);
-        preValue= new float[3];
-        orientation= (TextView) findViewById(R.id.ori);
-
+        orientation= (TextView)findViewById(R.id.ori);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        layout = (android.support.constraint.ConstraintLayout) findViewById(R.id.parent);
     }
     @Override
     protected void onPause() {
@@ -50,31 +63,27 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
         Sensor mySensor = event.sensor;
 
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                float xChange = preValue[0]-event.values[0];
-                float yChange = preValue[1]-event.values[1];
-                float zChange = preValue[2] -event.values[2];
-                preValue[0]= event.values[0];
-                preValue[1]= event.values[1];
-                preValue[2]= event.values[2];
+                x= event.values[0];
+                y= event.values[1];
+                z = event.values[2];
+                if(x>1){
+                    orientation.setText("Right");
 
-            long curTime = System.currentTimeMillis();
+                }
+                if(x<-1){
+                    orientation.setText("Left");
+                }
+                if(x>-1 && x<1){
+                    orientation.setText("Still");
+                }
+                setText(event);
+                shakeListner();
 
-            textX.setText("X-value: "+ event.values[0]);
 
-            textY.setText("Y-value: " + event.values[1]);
 
-            textZ.setText("Z-value: " + event.values[2]);
-
-            if(xChange>1){
-                orientation.setText("Right");
-
-            }
-            if(xChange<1){
-                orientation.setText("Left");
-            }
-
-            }
         }
+        }
+
 
 
     @Override
@@ -82,4 +91,37 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
 
     }
 
+    public void setText(SensorEvent event){
+        textX.setText("X-value: "+ Math.round(event.values[0]));
+
+        textY.setText("Y-value: " +Math.round(event.values[0]));
+
+        textZ.setText("Z-value: " + Math.round(event.values[0]));
+    }
+    public void play(){
+        if(player==null){
+            player= MediaPlayer.create(this,R.raw.beep);
+        }
+        player.start();
+    }
+
+    public void pause(){
+        if(player!= null){
+            player.stop();
+        }
+    }
+    public void shakeListner() {
+        mAccelLast = mAccelCurrent;
+        mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+        float delta = mAccelCurrent - mAccelLast;
+        mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+
+        if(mAccel>11){
+            vibrator.vibrate(300);
+            layout.setBackgroundColor(Color.RED);
+        }
+        else{
+            layout.setBackgroundColor(Color.WHITE);
+        }
+    }
 }
